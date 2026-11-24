@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Check | Moodly</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="logo">♡ Moodly</a>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="mood.html" class="active">Check Mood</a>
+    </div>
+</nav>
+
+<main class="mood-page">
+
+    <div class="mood-heading">
+        <span class="tag">♡ MOOD CHECK-IN</span>
+        <h1>How are you <span>feeling?</span></h1>
+        <p>Pilih perasaan yang paling menggambarkan dirimu hari ini.</p>
+    </div>
+
+    <div class="mood-container">
+
+        <div class="mood-grid">
+
+            <button class="mood-option" data-mood="senang">
+                <span class="mood-emoji">😄</span>
+                <strong>Senang</strong>
+                <small>Feeling happy</small>
+            </button>
+
+            <button class="mood-option" data-mood="sedih">
+                <span class="mood-emoji">😢</span>
+                <strong>Sedih</strong>
+                <small>Feeling sad</small>
+            </button>
+
+            <button class="mood-option" data-mood="marah">
+                <span class="mood-emoji">😡</span>
+                <strong>Marah</strong>
+                <small>Feeling angry</small>
+            </button>
+
+            <button class="mood-option" data-mood="lelah">
+                <span class="mood-emoji">😴</span>
+                <strong>Lelah</strong>
+                <small>Feeling tired</small>
+            </button>
+
+            <button class="mood-option" data-mood="cemas">
+                <span class="mood-emoji">😰</span>
+                <strong>Cemas</strong>
+                <small>Feeling anxious</small>
+            </button>
+
+            <button class="mood-option" data-mood="biasa">
+                <span class="mood-emoji">😐</span>
+                <strong>Biasa Saja</strong>
+                <small>Feeling normal</small>
+            </button>
+
+        </div>
+
+        <div class="note-box">
+            <label for="mood-note">
+                Ceritakan perasaanmu (opsional)
+            </label>
+            <textarea id="mood-note"
+                placeholder="Tuliskan apa yang sedang kamu rasakan..."></textarea>
+        </div>
+
+        <button class="primary-btn full-btn" id="submit-mood" disabled>
+            Lihat Rekomendasi →
+        </button>
+
+        <p class="selection-info" id="selection-info">
+            Pilih salah satu mood terlebih dahulu ♡
+        </p>
+
+    </div>
+</main>
+
+<footer>
+    <h3>♡ Moodly</h3>
+    <p>Made with love. Every feeling matters. © 2026</p>
+</footer>
+
+</body>
+</html>
