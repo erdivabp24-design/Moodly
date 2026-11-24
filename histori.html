@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histori Mood - Moodly</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 20px;
+            font-family: Arial, sans-serif;
+            background: #f7f3ff;
+            color: #514765;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #8c72bd;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #897f99;
+        }
+
+        .summary {
+            background: white;
+            padding: 20px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px #ddd4ee;
+        }
+
+        .summary h2 {
+            margin: 0;
+            color: #8c72bd;
+        }
+
+        .history-card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px #e6def0;
+        }
+
+        .history-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .mood {
+            font-size: 19px;
+            font-weight: bold;
+            color: #8c72bd;
+        }
+
+        .date {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .story {
+            margin-top: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .empty {
+            text-align: center;
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+        }
+
+        .back {
+            display: inline-block;
+            text-decoration: none;
+            background: #a78bce;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .refresh {
+            border: none;
+            background: #a78bce;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        @media(max-width: 600px) {
+            body {
+                padding: 20px 14px;
+            }
+
+            .history-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="index.html" class="back">← Kembali ke Moodly</a>
+
+    <div class="header">
+        <h1>♡ Histori Mood</h1>
+        <p>Riwayat perasaan yang telah dibagikan pengguna Moodly.</p>
+    </div>
+
+    <div class="summary">
+        <h2 id="totalMood">0</h2>
+        <p>Total Mood yang Masuk</p>
+    </div>
+
+    <button class="refresh" onclick="ambilHistori()">
+        ↻ Perbarui Histori
+    </button>
+
+    <div id="historyList">
+        <div class="empty">Memuat histori...</div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const SUPABASE_URL = "MASUKKAN_URL_SUPABASE";
+    const SUPABASE_ANON_KEY = "MASUKKAN_ANON_KEY_SUPABASE";
+
+    const db = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+    const emojiMood = {
+        senang: "😄 Senang",
+        sedih: "😢 Sedih",
+        marah: "😡 Marah",
+        lelah: "😴 Lelah",
+        cemas: "😰 Cemas",
+        biasa: "😐 Biasa"
+    };
+
+    async function ambilHistori() {
+
+        const historyList = document.getElementById("historyList");
+
+        historyList.innerHTML =
+            '<div class="empty">Memuat histori...</div>';
+
+        const { data, error } = await db
+            .from("histori_mood")
+            .select("*")
+            .order("tanggal", { ascending: false });
+
+        if (error) {
+            historyList.innerHTML =
+                '<div class="empty">Histori gagal dimuat. Periksa koneksi database.</div>';
+
+            console.error(error);
+            return;
+        }
+
+        document.getElementById("totalMood").textContent = data.length;
+
+        if (data.length === 0) {
+            historyList.innerHTML =
+                '<div class="empty">Belum ada mood yang masuk ♡</div>';
+            return;
+        }
+
+        historyList.innerHTML = "";
+
+        data.forEach(item => {
+
+            const card = document.createElement("div");
+            card.className = "history-card";
+
+            const top = document.createElement("div");
+            top.className = "history-top";
+
+            const mood = document.createElement("div");
+            mood.className = "mood";
+            mood.textContent = emojiMood[item.mood] || item.mood;
+
+            const date = document.createElement("div");
+            date.className = "date";
+
+            date.textContent = new Date(item.tanggal)
+                .toLocaleString("id-ID", {
+                    dateStyle: "long",
+                    timeStyle: "short"
+                });
+
+            const story = document.createElement("div");
+            story.className = "story";
+            story.textContent = item.cerita || "Tidak ada cerita.";
+
+            top.append(mood, date);
+            card.append(top, story);
+
+            historyList.appendChild(card);
+
+        });
+
+    }
+
+    ambilHistori();
+</script>
+
+</body>
+</html>
