@@ -73,7 +73,57 @@ const moodData = {
     }
 };
 
+
+// ===================================
+// KONFIGURASI SUPABASE
+// ===================================
+
+const SUPABASE_URL = "MASUKKAN_URL_SUPABASE";
+const SUPABASE_ANON_KEY = "MASUKKAN_ANON_KEY_SUPABASE";
+
+let supabaseClient = null;
+
+if (
+    window.supabase &&
+    SUPABASE_URL !== "MASUKKAN_URL_SUPABASE" &&
+    SUPABASE_ANON_KEY !== "MASUKKAN_ANON_KEY_SUPABASE"
+) {
+    supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+}
+
+
+// ===================================
+// FUNGSI SIMPAN HISTORI MOOD
+// ===================================
+
+async function simpanHistori(mood, cerita) {
+
+    if (!supabaseClient) {
+        throw new Error("Supabase belum dikonfigurasi.");
+    }
+
+    const { error } = await supabaseClient
+        .from("histori_mood")
+        .insert([
+            {
+                mood: mood,
+                cerita: cerita,
+                tanggal: new Date().toISOString()
+            }
+        ]);
+
+    if (error) {
+        throw error;
+    }
+}
+
+
+// ===================================
 // HALAMAN PILIH MOOD
+// ===================================
 
 const moodOptions = document.querySelectorAll(".mood-option");
 const submitButton = document.getElementById("submit-mood");
@@ -82,6 +132,7 @@ const selectionInfo = document.getElementById("selection-info");
 let selectedMood = null;
 
 moodOptions.forEach(option => {
+
     option.addEventListener("click", () => {
 
         moodOptions.forEach(item => {
@@ -97,24 +148,48 @@ moodOptions.forEach(option => {
             "Mood dipilih: " +
             option.querySelector("strong").textContent + " ♡";
     });
+
 });
 
+
 if (submitButton) {
-    submitButton.addEventListener("click", () => {
+
+    submitButton.addEventListener("click", async () => {
 
         if (!selectedMood) return;
 
         const note = document.getElementById("mood-note").value;
 
+        // Simpan sementara untuk halaman rekomendasi
         sessionStorage.setItem("selectedMood", selectedMood);
         sessionStorage.setItem("moodNote", note);
 
-        window.location.href = "result.html";
+        // Kirim data ke database
+        submitButton.disabled = true;
+
+        try {
+
+            await simpanHistori(selectedMood, note);
+
+            window.location.href = "result.html";
+
+        } catch (error) {
+
+            console.error("Gagal menyimpan histori:", error);
+
+            alert("Mood belum berhasil disimpan. Silakan coba lagi.");
+
+            submitButton.disabled = false;
+        }
+
     });
+
 }
 
 
+// ===================================
 // HALAMAN HASIL REKOMENDASI
+// ===================================
 
 const resultEmoji = document.getElementById("result-emoji");
 
@@ -155,6 +230,8 @@ if (resultEmoji) {
 
             card.append(icon, title, description);
             recommendationList.appendChild(card);
+
         });
+
     }
 }
